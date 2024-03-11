@@ -54,7 +54,7 @@ namespace FriedGameFolder
                 tmrLoad.Stop();
                 LoadMainExplorerWindowDetails();
                 LoadBackground();
-                //lblPath.Text = " File:" + CurrentPath;
+                lblPath.Text = " File:" + CurrentPath;
                 //lblRaw.Text = " Raw:" + CurrentRaw;
 
                 var directories = Directory.EnumerateDirectories(CurrentPath);
@@ -114,6 +114,8 @@ namespace FriedGameFolder
 
                 }
             }
+            lblPath.Text = " File:" + CurrentPath;
+
         }
 
         private List<IntPtr> GetChildWindowHandles(IntPtr mainWindowHandle)
@@ -235,5 +237,38 @@ namespace FriedGameFolder
             }
         }
 
+        private void makeTransparentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            flowFolder.BackgroundImage = null;
+            flowFolder.BackColor = Color.Fuchsia;
+            TransparencyHelper.SetWindowTransparency(CurrentHandle,Color.Fuchsia,0);
+        }
+    }
+    public class TransparencyHelper
+    {
+        // Constants
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_EX_LAYERED = 0x00080000;
+        private const int LWA_COLORKEY = 0x00000001;
+
+        // External functions
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
+
+        // Methods
+        public static void SetWindowTransparency(IntPtr hWnd, Color colorKey, byte opacity)
+        {
+            int extendedStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+            extendedStyle |= WS_EX_LAYERED;
+            SetWindowLong(hWnd, GWL_EXSTYLE, extendedStyle);
+
+            SetLayeredWindowAttributes(hWnd, (uint)ColorTranslator.ToWin32(colorKey), opacity, LWA_COLORKEY);
+        }
     }
 }
