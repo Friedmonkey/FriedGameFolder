@@ -74,8 +74,17 @@ namespace FriedGameFolderContext
             uint fileAttributes = FILE_ATTRIBUTE_ARCHIVE | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM;
             SetFileAttributesW(desktopini, fileAttributes);
 
-            DirectoryInfo info = new DirectoryInfo(folder);
-            info.Attributes |= FileAttributes.System;
+            DirectoryInfo folderInfo = new DirectoryInfo(folder);
+            folderInfo.Attributes |= FileAttributes.System;
+
+
+            //metadata folder
+            var metadata = Path.Combine(folder, "$metadata");
+
+            Directory.CreateDirectory(metadata);
+
+            DirectoryInfo metadataInfo = new DirectoryInfo(metadata);
+            metadataInfo.Attributes |= FileAttributes.Hidden | FileAttributes.System;
 
         }
     }
